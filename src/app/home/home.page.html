@@ -1,20 +1,112 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Blank
+    <ion-title size="large">
+      Pathfinder 1e Dpr Calculator
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openPopover($event)">
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+<ion-content #content [fullscreen]="true">
+  <ion-grid>
+    <ion-row *ngIf="!!results && !!acArray" >
+      <ion-col push-md="2" size-md="4">
+        <ion-item>
+          <ion-label color="primary">AC</ion-label>
+        </ion-item>
+      </ion-col>
+      <ion-col push-md="2" size-md="4">
+        <ion-item>
+          <ion-label color="primary">DPR</ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!!results && !!acArray">
+      <ion-col push-md="2" size-md="4">
+        <ion-list *ngFor="let ac of acArray">
+          <ion-item>
+            <ion-label>{{ac}}</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+      <ion-col push-md="2" size-md="4">
+        <ion-list *ngFor="let res of results">
+          <ion-item>
+            <ion-label>{{res}}</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col offset-md="3" size-md="6">
+        <ion-card>
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item-group>
+                <ion-item-divider>
+                  <ion-label>Target Armor Class</ion-label>
+                </ion-item-divider>
+                <ion-item>
+                  <ion-label position="floating" color="primary">Min</ion-label>
+                  <ion-input [(ngModel)]="minAc" type="number" min="0"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="floating" color="primary">Max</ion-label>
+                  <ion-input [(ngModel)]="maxAc" type="number" min="0"></ion-input>
+                </ion-item>
+              </ion-item-group>
+              <ion-item-group *ngFor="let attack of attacks; let i = index">
+                <ion-item-divider>
+                  <ion-button (click)="toggleReveal(i)" slot="start">
+                    <ion-icon *ngIf="attack.visible"  name="chevron-forward-outline"></ion-icon>
+                    <ion-icon *ngIf="!attack.visible" name="chevron-down-outline"></ion-icon>
+                  </ion-button>
+                  <ion-label>Attack {{i + 1}}</ion-label>
+                  <ion-button class="margin-left-small" (click)="duplicate(i)" slot="end">
+                    <ion-icon name="duplicate-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button *ngIf="attacks.length >= 2" class="margin-left-small" (click)="remove(i)" slot="end" color="danger">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </ion-button>
+                </ion-item-divider>
+                <div [hidden]="!attack.visible">
+                  <ion-item>
+                    <ion-label position="floating" color="primary">Hit bonus</ion-label>
+                    <ion-input [(ngModel)]="attacks[i].hit" type="number"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="floating" color="primary">Damage</ion-label>
+                    <ion-input [(ngModel)]="attacks[i].damage"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="floating" color="primary">Precision damage</ion-label>
+                  <ion-input [(ngModel)]="attacks[i].precisionDamage"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="floating" color="primary">Critical range</ion-label>
+                  <ion-input [(ngModel)]="attacks[i].critRange" type="number" min="2" max="20"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="floating" color="primary">Critical multiplier</ion-label>
+                  <ion-input [(ngModel)]="attacks[i].critMul" type="number" min="1"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="floating" color="primary">Extra critical damage</ion-label>
+                  <ion-input [(ngModel)]="attacks[i].critDamage"></ion-input>
+                </ion-item>
+              </div>
+              </ion-item-group>
+              <ion-item lines="none">
+                <ion-button (click)="calculate()" color="primary">Calculate</ion-button>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
